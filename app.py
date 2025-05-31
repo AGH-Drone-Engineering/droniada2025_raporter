@@ -7,9 +7,43 @@ from send_email import send_email_with_attachment
 import datetime
 from fpdf import FPDF
 from pdf_generator import generate_pdf
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding, hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+import io
+import os
 
-# Ścieżka do klucza serwisowego Firebase
-cred = credentials.Certificate('firebase_key.json')
+KEY_PASSWORD = b'testowehaslo'
+SALT = b'firebase_salt_1234'
+backend = default_backend()
+
+def derive_key(password, salt):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=backend
+    )
+    return kdf.derive(password)
+
+def decrypt_file_to_bytes(input_path, password, salt):
+    key = derive_key(password, salt)
+    with open(input_path, 'rb') as f:
+        iv = f.read(16)
+        ct = f.read()
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
+    decryptor = cipher.decryptor()
+    padded_data = decryptor.update(ct) + decryptor.finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    data = unpadder.update(padded_data) + unpadder.finalize()
+    return data
+
+# Odszyfruj klucz do pamięci
+firebase_key_bytes = decrypt_file_to_bytes('firebase_key.json.enc', KEY_PASSWORD, SALT)
+firebase_key_dict = json.loads(firebase_key_bytes.decode("utf-8"))
+cred = credentials.Certificate(firebase_key_dict)
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://droniada-2025-default-rtdb.europe-west1.firebasedatabase.app'
 })
@@ -46,12 +80,17 @@ def main():
             flight_time = end_dt - start_dt - datetime.timedelta(minutes=1)
             flight_time_str = f"{flight_time.seconds//60:02d}:{flight_time.seconds%60:02d}"
 
+            team = data.get('team', {})
             team_info = {
-                "name": team_name,
-                "email": team_email,
-                "flight_time": flight_time_str,
-                "mission_start": start_dt.strftime("%Y-%m-%d %H:%M:%S"),
-                "mission_end": end_dt.strftime("%Y-%m-%d %H:%M:%S")
+                "name": team.get('name', "AGH Drone Engineering"),
+                "email": team.get('email', "agh_droniada@m160.mikr.dev"),
+                "pilot": team.get('pilot', "[Imię Nazwisko, nr komórki]"),
+                "mission_start": team.get('mission_start', "[DD/MM/RRRR, GG:MM:SS]"),
+                "mission_number": team.get('mission_number', "[ZERO] [01] [02] [03]"),
+                "flight_time": team.get('flight_time', "[MM:SS]"),
+                "battery_before": team.get('battery_before', "[X% / XX V]"),
+                "kp_index": team.get('kp_index', "[X Kp]"),
+                "battery_after": team.get('battery_after', "[X% / XX V]")
             }
             print(f"Dane zespołu: {team_info}")
             # Możesz przekazać team_info do generatora PDF
@@ -63,23 +102,20 @@ def main():
             )
             print("Mapa wygenerowana jako wynik.png")
             print("Generowanie PDF...")
-            # Dodaj dane o baterii jeśli są w bazie
-            team_info['battery_before'] = data.get('team', {}).get('battery_before', '---')
-            team_info['battery_after'] = data.get('team', {}).get('battery_after', '---')
             generate_pdf(team_info, 'raport.pdf')
             print("PDF wygenerowany jako raport.pdf")
             print("Wysyłanie emaila...")  
             send_email_with_attachment(
               subject="AGH Drone Engineering - raport z misji",
-              body="W załączniku znajduje się najnowszy raport PDF.",
+              body="W załączniku znajduje się najnowszy raport PDF oraz mapa.",
               to="skrzynka.wrzutka@gmail.com",
-              attachment_path="raport.pdf",
+              attachments=["raport.pdf", "wynik.png"],
               from_addr="agh_droniada@m160.mikr.dev",
               from_pass="!!zaq1@WSX!!"
             )
             print("Email wysłany")
             ref.update({'generate': False})
-        time.sleep(2)  # sprawdzaj co 2 sekundy
+        time.sleep(3)  # sprawdzaj co 2 sekundy
 
 if __name__ == '__main__':
     main()

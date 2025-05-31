@@ -5,7 +5,7 @@
     "email": "agh_droniada@m160.mikr.dev",
     "pilot": "Jan Kowalski, 123456789",
     "mission_start": "2024-06-10T12:34:00",
-    "mission_number": 0,
+    "mission_number": "0",
     "flight_time": "12:34",
     "battery_before": "95% / 16.8V",
     "battery_after": "80% / 16.2V",

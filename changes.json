@@ -1,0 +1,27 @@
+[
+    {
+        "type": "infrastructure",
+        "description": "Środek",
+        "gps_coords": [50.2726756, 18.67110105]
+    },
+    {
+        "type": "emergency",
+        "description": "Lewy górny róg",
+        "gps_coords": [50.2728434, 18.6705653]
+    },
+    {
+        "type": "worker",
+        "description": "Prawy dolny róg",
+        "gps_coords": [50.2725078, 18.6716368]
+    },
+    {
+        "type": "infrastructure",
+        "description": "Prawy górny róg",
+        "gps_coords": [50.2728434, 18.6716368]
+    },
+    {
+        "type": "emergency",
+        "description": "Lewy dolny róg",
+        "gps_coords": [50.2725078, 18.6705653]
+    }
+] 

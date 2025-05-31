@@ -1,0 +1,13 @@
+{
+    "scale_factor": 1.0,
+    "origin": [50.0617, 19.9373],
+    "rotation": 0,
+    "marker_size": 20,
+    "font_size": 20,
+    "colors": {
+        "infrastructure": [0, 255, 0],
+        "emergency": [255, 0, 0],
+        "worker": [0, 0, 255],
+        "text": [0, 0, 0]
+    }
+} 

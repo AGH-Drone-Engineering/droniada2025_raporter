@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "droniada-2025",
+  "private_key_id": "acaad7ed0f238ffec5e1e6c3611c3323d33496a3",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDXz8xwQgNGkpiF\nNltw9qqnmQQOMnR7tSETF7091E0WrtE9xcQ6O+GOjS9HlY1gTPxAPfU0WGgTrzae\n+jAq6IxfLSdL7ibuOW05JMmuLL3YFLCn2Vj3uew6Zmy8Idr3THAzPdq4pb0pEdjV\n21+Z9hmoVacPmX5HWPsRkJRtwEgvWtBmr0ZZRMBWmOU3VMEbOXgzxbj2pZ2Qr9Yv\n6QClujzFb08CGZb6ItBTRPMa6aAdYBVeeyDlPpJ7wr89E2YlA1FzdZ91UPlyU8X+\nkg9jVeuc4zmGDOFVsbwqEGw4IaqaP2wrvWDLtUyXtEwAB7HBInRWCTqKLfHSAJvg\nKypLFTX1AgMBAAECggEAY9nq0sPQRS5dsEDytQUD95CGPlVc7MHlADL7JajdVBHl\nkSm4PWNoXK75Qasx4u0rx0ODeMkwum7WnF7Qu4GmNQEszeZuD8n1PbvGLrbXzarh\nA4A+ODxHTswGIlOdvs8YmLTVRpq0t1RhGa2rAY7K10ZuCfswYK2MWNemvVL6cyG9\nD+SOg+YkF3VYbFWTYxQuH1TMUX2cRAaqXPnxiRRsNe9HusR9Mx9lu8zx3eLYWllN\ncOLqfKpR8i9+NA07I7ZSBcPpArS/IFyImkZBxiTFGggzwPwh6mkoGqCeJe2C4WIr\ny0YVYcoPMAbYMj/frkoPU+IvrgWH7O0xmpTl7hejPwKBgQD7JUIQTELlzIX6O3b/\n7bKwgpAJgZr4B2Q0SiQO6nzvnC8D6sovWVLRn/XiU6+9h3wxZX+tSVA6FRsTbSzm\nZ7EYUVUrTSE1xtYYFDUNmhW32vMI7zWGvNQ0g7FnZOJjsQCy3j3yiY3+8Tix+ZXt\na8etjgNQ5c4HCDEXcOOkNWCbhwKBgQDb+7LIb99pifKibloOlzoaViUAaAlRqH3I\nQVOSsoXZqNKgibfH19G7KHxvPUoeP1+jrB4188k+VIzlfc0V0LOSkaqbEEiR7fZS\n9gT7+Wk9TbcWBeiSyDgaCZuIbGcQcu4pzO5ZEqXMctobINTBuBR9thlxq9yIww44\nVuSbMg4ZowKBgQCNaLQjAx2j0J4bgIIHpqo3crxxbdV5FIhaXOiisWt5awKZ/Qis\n0mmseJn1PtO0LuZB1fmm86HFon6lWJKwhPAVVi5TfFFXu0ZvNmmM6BaUeCbh//au\nkAIYM5KfOhGyukY/cJ2Gw+b9Bou6wmKl1UsQMOczFMIF+ZnSrhCvNBLaXwKBgQCU\n5Km/rKjkwC/v7Q0bbxQumzv0KHaWRJrOHhk444hhKDlX257+rn8QVHjUugEes/pB\nx8+y6My/WW78LcfQCjBg9iMpTT4xN4VP5aC+A7RNf/p594nRP59pUDNrhSPFKGU2\n+bQhqdN6rAof7nrSm4uTAtv56j8cehl33KhiuuB8TQKBgCY1lAE+0hvmd2zhrn9p\nJiWTstoxzOPeR4sf2YMzCAQL6f/VCMOmCRZUohszRuudu018qzzW8pKkGkUco0GU\nEKEmRTKAFEB1t9k1ugit+mc8onDV9Ou+hiav7V5jbWCRehALGySwrTcVobp91NDk\nnKnWyg+fUaeZS/clm7ftRvhL\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@droniada-2025.iam.gserviceaccount.com",
+  "client_id": "117936159490142733164",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40droniada-2025.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

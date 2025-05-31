@@ -1,0 +1,34 @@
+{
+  "generate": true,
+  "team": {
+    "name": "AGH Drone Engineering",
+    "email": "agh_droniada@m160.mikr.dev",
+    "pilot": "Jan Kowalski, 123456789",
+    "mission_start": "2024-06-10T12:34:00",
+    "mission_number": 0,
+    "flight_time": "12:34",
+    "battery_before": "95% / 16.8V",
+    "battery_after": "80% / 16.2V",
+    "kp_index": "1.2"
+  },
+  "points": [
+    {
+      "type": "infrastructure",
+      "description": "Środek",
+      "gps_coords": [50.2726756, 18.67110105],
+      "image": ""
+    },
+    {
+      "type": "emergency",
+      "description": "Lewy górny róg",
+      "gps_coords": [50.2728434, 18.6705653],
+      "image": ""
+    },
+    {
+      "type":"aruco",
+      "description": "Aruco 5423",
+      "gps_coords": [50.2728534, 18.67110105],
+      "image": ""
+    }
+  ]
+}

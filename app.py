@@ -86,11 +86,12 @@ def main():
                 "email": team.get('email', "agh_droniada@m160.mikr.dev"),
                 "pilot": team.get('pilot', "[Imię Nazwisko, nr komórki]"),
                 "mission_start": team.get('mission_start', "[DD/MM/RRRR, GG:MM:SS]"),
-                "mission_number": team.get('mission_number', "[ZERO] [01] [02] [03]"),
-                "flight_time": team.get('flight_time', "[MM:SS]"),
-                "battery_before": team.get('battery_before', "[X% / XX V]"),
-                "kp_index": team.get('kp_index', "[X Kp]"),
-                "battery_after": team.get('battery_after', "[X% / XX V]")
+                "mission_number": team.get('mission_number', "-1"),
+                "flight_time": flight_time_str,
+                "battery_before": team.get('battery_before', "98% / 18.2V"),
+                "kp_index": team.get('kp_index', "1.2"),
+                "battery_after": team.get('battery_after', "53% / 12.6V"),
+                "points": data.get('points', [])
             }
             print(f"Dane zespołu: {team_info}")
             # Możesz przekazać team_info do generatora PDF

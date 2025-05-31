@@ -13,9 +13,10 @@
   },
   "points": [
     {
-      "type": "infrastructure",
+      "type": "pipeline",
       "description": "Środek",
       "gps_coords": [50.2726756, 18.67110105],
+      "detection_time": "2024-06-10T12:34:00",
       "image": ""
     },
     {
@@ -25,10 +26,52 @@
       "image": ""
     },
     {
-      "type":"aruco",
+      "type": "aruco",
       "description": "Aruco 5423",
       "gps_coords": [50.2728534, 18.67110105],
       "image": ""
+    },
+    {
+      "type": "worker",
+      "description": "Pracownik 1",
+      "gps_coords": [50.2727000, 18.6711000],
+      "bhp": "Tak",
+      "photo_b64": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+    },
+    {
+      "type": "worker",
+      "description": "Pracownik 2",
+      "gps_coords": [50.2727100, 18.6711100],
+      "bhp": "Nie",
+      "photo_b64": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+    },
+    {
+      "type": "worker",
+      "description": "Pracownik 3",
+      "gps_coords": [50.2727200, 18.6711200],
+      "bhp": "Tak",
+      "photo_b64": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+    },
+    {
+      "type": "worker",
+      "description": "Pracownik 4",
+      "gps_coords": [50.2727300, 18.6711300],
+      "bhp": "Tak",
+      "photo_b64": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+    },
+    {
+      "type": "worker",
+      "description": "Pracownik 5",
+      "gps_coords": [50.2727400, 18.6711400],
+      "bhp": "Nie",
+      "photo_b64": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+    },
+    {
+      "type": "worker",
+      "description": "Pracownik 6",
+      "gps_coords": [50.2727500, 18.6711500],
+      "bhp": "Tak",
+      "photo_b64": "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
     }
   ]
 }

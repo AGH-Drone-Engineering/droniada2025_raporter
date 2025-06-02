@@ -230,7 +230,6 @@ def generate_pdf(team_info, output_path):
             # Przygotuj teksty do łamania
             typ = infra.get('type', '')
             category_desc, icon_path = ICON_CATEGORY_MAP.get(typ, ('Inne', 'icons/bag.png'))
-            category_lines = category_desc.split('\n')
             detection_time = infra.get('detection_time', '[DD/MM/RRRR, GG:MM:SS]')
             # Lepsze łamanie timestampu
             if 'T' in detection_time:
@@ -245,12 +244,21 @@ def generate_pdf(team_info, output_path):
                 time_lines = [detection_time]
             gps = infra.get('gps_coords', [None, None])
             if gps[0] is not None and gps[1] is not None:
-                loc_lines = [f"Lat {gps[0]:.5f}", f"Long {gps[1]:.5f}"]
+                loc_text = f"Lat {gps[0]:.5f}, Long {gps[1]:.5f}"
+                loc_lines = break_text(pdf, loc_text, col_widths[3] - 4, 9)
             else:
                 loc_lines = ['']
             # Dodaj linie opisu detekcji
             description = infra.get('description', '')
-            description_lines = description.split('\n') if description else ['']
+            if description:
+                description_lines = break_text(pdf, description, col_widths[4] - 4, 9)  # -4 dla marginesów
+            else:
+                description_lines = ['']
+            # Także złam kategorię jeśli za długa
+            if category_desc:
+                category_lines = break_text(pdf, category_desc, col_widths[1] - 4, 9)
+            else:
+                category_lines = ['']
             max_lines = max(len(category_lines), len(time_lines), len(loc_lines), len(description_lines))
             line_height = (row_height - 2*padding_y) / max_lines
             # #
@@ -357,7 +365,8 @@ def generate_pdf(team_info, output_path):
                 time_lines = [detection_time]
             gps = event.get('gps_coords', [None, None])
             if gps[0] is not None and gps[1] is not None:
-                loc_lines = [f"Lat {gps[0]:.5f}", f"Long {gps[1]:.5f}"]
+                loc_text = f"Lat {gps[0]:.5f}, Long {gps[1]:.5f}"
+                loc_lines = break_text(pdf, loc_text, col_widths[3] - 4, 9)
             else:
                 loc_lines = ['']
             # Wyznacz max liczbę linii
@@ -451,10 +460,13 @@ def generate_pdf(team_info, output_path):
             pdf.set_text_color(*BLACK)
             x_start = pdf.get_x()
             y_start = pdf.get_y()
-            value_lines = [str(aruco.get('value', ''))]
+            # Złam tekst zawartości
+            value_text = str(aruco.get('value', ''))
+            value_lines = break_text(pdf, value_text, col_widths[1] - 4, 9)
             gps = aruco.get('gps_coords', [None, None])
             if gps[0] is not None and gps[1] is not None:
-                loc_lines = [f"Lat {gps[0]:.5f}", f"Long {gps[1]:.5f}"]
+                loc_text = f"Lat {gps[0]:.5f}, Long {gps[1]:.5f}"
+                loc_lines = break_text(pdf, loc_text, col_widths[2] - 4, 9)
             else:
                 loc_lines = ['']
             max_lines = max(len(value_lines), len(loc_lines))
@@ -523,3 +535,34 @@ def generate_pdf(team_info, output_path):
         pdf.cell(0, 10, 'Brak mapy wykrycia (detection_map.png)', ln=True, align='C')
 
     pdf.output(output_path) 
+
+def break_text(pdf, text, max_width, font_size=9):
+    """Łamie tekst żeby zmieścił się w danej szerokości."""
+    pdf.set_font('DejaVu', '', font_size)
+    words = text.split(' ')
+    lines = []
+    current_line = ""
+    
+    for word in words:
+        test_line = current_line + (" " if current_line else "") + word
+        if pdf.get_string_width(test_line) <= max_width:
+            current_line = test_line
+        else:
+            if current_line:
+                lines.append(current_line)
+                current_line = word
+            else:
+                # Słowo za długie - podziel na części
+                while pdf.get_string_width(word) > max_width and len(word) > 1:
+                    # Znajdź maksymalną długość która się zmieści
+                    for i in range(len(word), 0, -1):
+                        if pdf.get_string_width(word[:i]) <= max_width:
+                            lines.append(word[:i])
+                            word = word[i:]
+                            break
+                current_line = word
+    
+    if current_line:
+        lines.append(current_line)
+    
+    return lines 

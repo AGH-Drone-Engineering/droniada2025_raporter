@@ -1,0 +1,20 @@
+[project]
+name = "droniada2025"
+version = "0.1.0"
+description = "AGH Drone Engineering - system inspekcji"
+dependencies = [
+    "firebase-admin>=6.4.0",
+    "cryptography>=41.0.0",
+    "fpdf2>=2.7.0",
+    "pillow>=10.0.0",
+    "requests>=2.31.0",
+    "matplotlib>=3.7.0",
+    "opencv-python>=4.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [] 

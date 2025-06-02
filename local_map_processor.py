@@ -165,7 +165,7 @@ class LocalMapProcessor:
         # Nanieś zmiany
         for change in changes:
             coords = self.convert_gps_to_pixel(change['gps_coords'])
-            self.draw_marker(draw, coords, change['type'], change['description'], font, change['gps_coords'], img_pil)
+            self.draw_marker(draw, coords, change['type'], change['description'] if 'description' in change else '', font, change['gps_coords'], img_pil)
 
         # Zapisz wynik
         if output_path is None:

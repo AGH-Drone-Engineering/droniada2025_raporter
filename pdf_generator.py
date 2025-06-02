@@ -7,6 +7,9 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (60, 120, 40)
 
+# Stały rozmiar wyświetlania obrazów w PDF (punkty)
+IMG_DISPLAY_SIZE = 24
+
 
 def rgb_to_fpdf(rgb):
     return tuple(int(x) for x in rgb)
@@ -134,24 +137,23 @@ def generate_pdf(team_info, output_path):
                 try:
                     img_data = base64.b64decode(photo_b64)
                     img = Image.open(BytesIO(img_data))
-                    img.thumbnail((20, 20))  # proporcje 1:1
                     temp_path = f"temp_worker_{idx}.png"
                     img.save(temp_path)
                     x = pdf.get_x()
                     y = pdf.get_y()
                     pdf.cell(col_widths[3], 24, '', 1, 0, 'C', 0)
-                    # Wyśrodkuj obrazek w komórce
-                    img_x = x + (col_widths[3] - 20) / 2
+                    # Wyśrodkuj obrazek w komórce (stały rozmiar wyświetlania 24x24)
+                    img_x = x + (col_widths[3] - IMG_DISPLAY_SIZE) / 2
                     img_y = y + 2
-                    pdf.image(temp_path, img_x, img_y, 20, 20)
+                    pdf.image(temp_path, img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 except Exception:
                     x = pdf.get_x()
                     y = pdf.get_y()
                     pdf.cell(col_widths[3], 24, '', 1, 0, 'C', 0)
                     try:
-                        img_x = x + (col_widths[3] - 20) / 2
+                        img_x = x + (col_widths[3] - IMG_DISPLAY_SIZE) / 2
                         img_y = y + 2
-                        pdf.image('worker_default.png', img_x, img_y, 20, 20)
+                        pdf.image('worker_default.png', img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                     except Exception:
                         pass
             else:
@@ -159,12 +161,12 @@ def generate_pdf(team_info, output_path):
                 y = pdf.get_y()
                 pdf.cell(col_widths[3], 24, '', 1, 0, 'C', 0)
                 try:
-                    img_x = x + (col_widths[3] - 20) / 2
+                    img_x = x + (col_widths[3] - IMG_DISPLAY_SIZE) / 2
                     img_y = y + 2
-                    pdf.image('worker_default.png', img_x, img_y, 20, 20)
+                    pdf.image('worker_default.png', img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 except Exception:
                     pass
-            pdf.ln()
+            pdf.set_xy(x_start, y_start + row_height)
     else:
         pdf.ln(4)
         pdf.set_font('DejaVu', 'B', 10)
@@ -173,8 +175,8 @@ def generate_pdf(team_info, output_path):
 
     # Sekcja 4 - Zmiany w infrastrukturze
     ICON_CATEGORY_MAP = {
-        'tower': ('Słup energetyczny', 'icons/tower.png'),
-        'broken-tower': ('Słup energetyczny', 'icons/broken-tower.png'),
+        'tower': ('Linia energetyczna', 'icons/tower.png'),
+        'broken-tower': ('Urwana linia energetyczna', 'icons/broken-tower.png'),
         'rusty-pipe': ('Rurociąg', 'icons/rusty-pipe.png'),
         'fixed-pipe': ('Rurociąg', 'icons/fixed-pipe.png'),
         'barrel': ('Beczka', 'icons/barrel.png'),
@@ -192,12 +194,11 @@ def generate_pdf(team_info, output_path):
         'broken-powerpole': ('Słup energetyczny', 'icons/broken-powerpole.png'),
         'car': ('Samochód', 'icons/car.png'),
         'pipeline': ('Rurociąg', 'icons/infrastructure.png'),
+        'other': ('Inne', 'icons/crosshair.png'),
         
         # ... inne mapowania ...
     }
     infra_types = list(ICON_CATEGORY_MAP.keys())
-    print(infra_types)
-    print([p['type'] for p in team_info.get('points', [])])
     infra_points = [p for p in team_info.get('points', []) if p.get('type') in infra_types]
     if infra_points:
         pdf.add_page()
@@ -207,7 +208,7 @@ def generate_pdf(team_info, output_path):
         pdf.multi_cell(0, 8, '4. ZMIANY W INFRASTRUKTURZE W STOSUNKU DO LOTU "ZERO"', align='L')
         pdf.ln(1)
         table_width = pdf.w - 2 * pdf.l_margin
-        col_widths = [table_width * 0.06, table_width * 0.22, table_width * 0.18, table_width * 0.28, table_width * 0.26]
+        col_widths = [table_width * 0.05, table_width * 0.18, table_width * 0.15, table_width * 0.22, table_width * 0.22, table_width * 0.18]
         row_height = 36  # wyższy wiersz dla większego zdjęcia
         padding_y = 6
         pdf.set_fill_color(*GREEN)
@@ -219,7 +220,8 @@ def generate_pdf(team_info, output_path):
         pdf.cell(col_widths[1], 8, 'KATEGORIA', 1, 0, 'C', 1)
         pdf.cell(col_widths[2], 8, 'CZAS WYKRYCIA', 1, 0, 'C', 1)
         pdf.cell(col_widths[3], 8, 'LOKALIZACJA', 1, 0, 'C', 1)
-        pdf.cell(col_widths[4], 8, 'ZDJĘCIE', 1, 1, 'C', 1)
+        pdf.cell(col_widths[4], 8, 'OPIS', 1, 0, 'C', 1)
+        pdf.cell(col_widths[5], 8, 'ZDJĘCIE', 1, 1, 'C', 1)
         pdf.set_font('DejaVu', '', 9)
         for idx, infra in enumerate(infra_points, 1):
             pdf.set_text_color(*BLACK)
@@ -227,10 +229,16 @@ def generate_pdf(team_info, output_path):
             y_start = pdf.get_y()
             # Przygotuj teksty do łamania
             typ = infra.get('type', '')
-            desc, icon_path = ICON_CATEGORY_MAP.get(typ, ('Inne', 'icons/bag.png'))
-            desc_lines = desc.split('\n')
+            category_desc, icon_path = ICON_CATEGORY_MAP.get(typ, ('Inne', 'icons/bag.png'))
+            category_lines = category_desc.split('\n')
             detection_time = infra.get('detection_time', '[DD/MM/RRRR, GG:MM:SS]')
-            if ',' in detection_time:
+            # Lepsze łamanie timestampu
+            if 'T' in detection_time:
+                date_part, time_part = detection_time.split('T', 1)
+                if '.' in time_part:
+                    time_part = time_part.split('.')[0]  # usuń mikrosekundy
+                time_lines = [date_part, time_part]
+            elif ',' in detection_time:
                 date_part, time_part = detection_time.split(',', 1)
                 time_lines = [date_part.strip(), time_part.strip()]
             else:
@@ -240,14 +248,17 @@ def generate_pdf(team_info, output_path):
                 loc_lines = [f"Lat {gps[0]:.5f}", f"Long {gps[1]:.5f}"]
             else:
                 loc_lines = ['']
-            max_lines = max(len(desc_lines), len(time_lines), len(loc_lines))
+            # Dodaj linie opisu detekcji
+            description = infra.get('description', '')
+            description_lines = description.split('\n') if description else ['']
+            max_lines = max(len(category_lines), len(time_lines), len(loc_lines), len(description_lines))
             line_height = (row_height - 2*padding_y) / max_lines
             # #
             pdf.cell(col_widths[0], row_height, str(idx), 1, 0, 'C', 0)
             # Kategoria
             y_cell = pdf.get_y()
             for i in range(max_lines):
-                txt = desc_lines[i] if i < len(desc_lines) else ''
+                txt = category_lines[i] if i < len(category_lines) else ''
                 y_line = y_cell + padding_y + i*line_height
                 pdf.set_xy(x_start + col_widths[0], y_line)
                 pdf.cell(col_widths[1], line_height, txt, 0, 0, 'C', 0)
@@ -269,36 +280,42 @@ def generate_pdf(team_info, output_path):
                 pdf.cell(col_widths[3], line_height, txt, 0, 0, 'C', 0)
             pdf.set_xy(x_start + col_widths[0] + col_widths[1] + col_widths[2], y_cell)
             pdf.cell(col_widths[3], row_height, '', 1, 0, '', 0)
+            # Opis detekcji
+            for i in range(max_lines):
+                txt = description_lines[i] if i < len(description_lines) else ''
+                y_line = y_cell + padding_y + i*line_height
+                pdf.set_xy(x_start + col_widths[0] + col_widths[1] + col_widths[2] + col_widths[3], y_line)
+                pdf.cell(col_widths[4], line_height, txt, 0, 0, 'C', 0)
+            pdf.set_xy(x_start + col_widths[0] + col_widths[1] + col_widths[2] + col_widths[3], y_cell)
+            pdf.cell(col_widths[4], row_height, '', 1, 0, '', 0)
             # Zdjęcie
             import base64
             from io import BytesIO
             from PIL import Image
             image_b64 = infra.get('image', '')
-            x_img = x_start + col_widths[0] + col_widths[1] + col_widths[2] + col_widths[3]
+            x_img = x_start + col_widths[0] + col_widths[1] + col_widths[2] + col_widths[3] + col_widths[4]
             y_img = y_cell + padding_y
             pdf.set_xy(x_img, y_cell)
-            pdf.cell(col_widths[4], row_height, '', 1, 0, 'C', 0)
+            pdf.cell(col_widths[5], row_height, '', 1, 0, 'C', 0)
             try:
                 if image_b64:
                     img_data = base64.b64decode(image_b64)
                     img = Image.open(BytesIO(img_data))
-                    img.thumbnail((row_height - 2*padding_y, row_height - 2*padding_y))
                     temp_path = f"temp_infra_{idx}.png"
                     img.save(temp_path)
-                    img_x = x_img + (col_widths[4] - (row_height - 2*padding_y)) / 2
+                    img_x = x_img + (col_widths[5] - IMG_DISPLAY_SIZE) / 2
                     img_y = y_img
-                    pdf.image(temp_path, img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                    pdf.image(temp_path, img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 else:
                     raise Exception('Brak zdjęcia')
             except Exception:
                 try:
-                    img_x = x_img + (col_widths[4] - (row_height - 2*padding_y)) / 2
+                    img_x = x_img + (col_widths[5] - IMG_DISPLAY_SIZE) / 2
                     img_y = y_img
-                    pdf.image('infrastructure_default.png', img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                    pdf.image('infrastructure_default.png', img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 except Exception:
                     pass
             pdf.set_xy(x_start, y_start + row_height)
-            pdf.ln()
 
     # Sekcja 5 - Sytuacje nadzwyczajne
     event_types = ['intruder', 'fire', 'emergency']
@@ -387,29 +404,27 @@ def generate_pdf(team_info, output_path):
                 if image_b64:
                     img_data = base64.b64decode(image_b64)
                     img = Image.open(BytesIO(img_data))
-                    img.thumbnail((row_height - 2*padding_y, row_height - 2*padding_y))
                     temp_path = f"temp_event_{idx}.png"
                     img.save(temp_path)
-                    img_x = x_img + (col_widths[4] - (row_height - 2*padding_y)) / 2
+                    img_x = x_img + (col_widths[4] - IMG_DISPLAY_SIZE) / 2
                     img_y = y_img
-                    pdf.image(temp_path, img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                    pdf.image(temp_path, img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 else:
                     raise Exception('Brak zdjęcia')
             except Exception:
                 try:
-                    img_x = x_img + (col_widths[4] - (row_height - 2*padding_y)) / 2
+                    img_x = x_img + (col_widths[4] - IMG_DISPLAY_SIZE) / 2
                     img_y = y_img
                     if event.get('type') == 'emergency':
-                        pdf.image('emergency_default.png', img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                        pdf.image('emergency_default.png', img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                     else:
-                        pdf.image('icons/emergency.png', img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                        pdf.image('icons/emergency.png', img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 except Exception:
                     pass
             # Powiadomienie
             pdf.set_xy(x_start + col_widths[0] + col_widths[1] + col_widths[2] + col_widths[3] + col_widths[4], y_cell)
             pdf.cell(col_widths[5], row_height, event.get('notification', 'Tak'), 1, 0, 'C', 0)
             pdf.set_xy(x_start, y_start + row_height)
-            pdf.ln()
 
     # Sekcja 6 - Kody ArUco
     aruco_points = [p for p in team_info.get('points', []) if p.get('type') == 'aruco']
@@ -476,23 +491,21 @@ def generate_pdf(team_info, output_path):
                 if image_b64:
                     img_data = base64.b64decode(image_b64)
                     img = Image.open(BytesIO(img_data))
-                    img.thumbnail((row_height - 2*padding_y, row_height - 2*padding_y))
                     temp_path = f"temp_aruco_{idx}.png"
                     img.save(temp_path)
-                    img_x = x_img + (col_widths[3] - (row_height - 2*padding_y)) / 2
+                    img_x = x_img + (col_widths[3] - IMG_DISPLAY_SIZE) / 2
                     img_y = y_img
-                    pdf.image(temp_path, img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                    pdf.image(temp_path, img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 else:
                     raise Exception('Brak zdjęcia')
             except Exception:
                 try:
-                    img_x = x_img + (col_widths[3] - (row_height - 2*padding_y)) / 2
+                    img_x = x_img + (col_widths[3] - IMG_DISPLAY_SIZE) / 2
                     img_y = y_img
-                    pdf.image('icons/qrcode.png', img_x, img_y, row_height - 2*padding_y, row_height - 2*padding_y)
+                    pdf.image('icons/qrcode.png', img_x, img_y, IMG_DISPLAY_SIZE, IMG_DISPLAY_SIZE)
                 except Exception:
                     pass
             pdf.set_xy(x_start, y_start + row_height)
-            pdf.ln()
 
     # Sekcja 7 - Mapa wykrycia
     pdf.add_page()

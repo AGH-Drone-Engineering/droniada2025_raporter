@@ -93,7 +93,6 @@ def main():
                 "battery_after": team.get('battery_after', "53% / 12.6V"),
                 "points": data.get('points', [])
             }
-            print(f"Dane zespołu: {team_info}")
             # Możesz przekazać team_info do generatora PDF
             processor = LocalMapProcessor('map_config.json')
             processor.process_map(
